@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LanguageNav from "./LanguageNav";
 import "../App.css";
+import ReposGrid from "./ReposGrid";
 
 function Popular() {
   const languages = ["All", "JavaScript", "React", "CSS", "Python"];
@@ -9,21 +10,13 @@ function Popular() {
   const [repos, setRepos] = useState({});
   const [error, setError] = useState(null);
 
-  console.log(repos);
+  // console.log(repos);
 
   useEffect(() => {
-    updateLanguage(language);
-  }, [language]);
-
-  function updateLanguage(lang) {
-    setLanguage(lang);
-    setError(null);
-
-    // console.log(lang);
     if (!repos[language]) {
-      console.log("hello");
+      // console.log("hello");
       fetch(
-        `https://api.github.com/search/repositories?q=${lang}&sort=stars&order=desc`
+        `https://api.github.com/search/repositories?q=${language}&sort=stars&order=desc`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -36,7 +29,13 @@ function Popular() {
           setError("there was an error fetching new repositories");
         });
     }
+  }, [repos, language]);
+
+  function updateLanguage(lang) {
+    setLanguage(lang);
+    setError(null);
   }
+
   function isLoading() {
     return !repos[language] && error === null;
   }
@@ -50,7 +49,7 @@ function Popular() {
       />
       {isLoading() && <p>LOADING</p>}
       {error && <p>{error}</p>}
-      {repos[language] && <pre>{JSON.stringify(repos[language], null, 2)}</pre>}
+      {repos[language] && <ReposGrid repos={repos[language]} />}
     </>
   );
 }
